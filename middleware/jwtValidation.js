@@ -1,33 +1,34 @@
 const jwt = require("jsonwebtoken");
 const Customer = require("../model/customerRegister");
 const Owner = require("../model/ownerRegister");
+
 const dotenv = require("dotenv");
+const { connectToDatabase } = require("../db/db");
 
 dotenv.config();
 
-const secretKey = "sanan karim secret code"; // Replace with your actual secret key
-
-const requireAuth = (role) => {
+const requireAuth = () => {
   return async (req, res, next) => {
-    const token = req.cookies.jwt;
-    let User;
+    const authHeader = req.headers["authorization"];
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.slice(7);
+      let User;
 
-    if (role === "owner") {
-      User = Owner;
-    } else if (role === "customer") {
-      User = Customer;
-    }
-
-    if (token) {
       try {
-        const decodedToken = jwt.verify(token, secretKey);
-        const user = await User.findById(decodedToken.id);
-
-        if (!user) {
+        const decodedToken = await jwt.verify(token, process.env.secret_key);
+        console.table(decodedToken.userId);
+        if (decodedToken.role === "owner") {
+          connectToDatabase();
+          User = await Owner.findById(decodedToken.userId);
+        } else if (decodedToken.role === "customer") {
+          connectToDatabase();
+          User = await Customer.findById(decodedToken.userId);
+        }
+        if (!User) {
           throw new Error("User not found");
         }
 
-        req.user = user;
+        req.user = User;
         console.log(req.user._id);
         next();
       } catch (err) {
@@ -35,7 +36,7 @@ const requireAuth = (role) => {
         res.status(401).json({ error: "Authentication failed" });
       }
     } else {
-      res.status(401).json({ error: "Authentication required" });
+      res.status(401).json({ error: "Bearer token required" });
     }
   };
 };
@@ -49,8 +50,8 @@ const checkUser = async (req, res, next) => {
   }
 
   try {
-    const decodedToken = jwt.verify(token, secretKey);
-    
+    const decodedToken = jwt.verify(token, process.env.secret_key);
+
     if (decodedToken.role === "customer") {
       user = await Customer.findById(decodedToken.id);
     } else if (decodedToken.role === "owner") {

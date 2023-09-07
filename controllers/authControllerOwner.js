@@ -63,12 +63,3 @@ module.exports.signin_post = async (req, res) => {
   }
 };
 
-
-module.exports.profile_get = async (req, res) => {
-      try {
-        const { _id}  = req.body ;
-        connectToDatabase()
-      } catch (error) {
-        
-      }
-};

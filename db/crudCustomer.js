@@ -6,7 +6,7 @@ const { connectToDatabase } = require("./db");
 const getById = async (Id) => {
   try {
     connectToDatabase();
-    const result = await User.findById(Id);
+    const result = await User.findById();
     console.log(result);
     closeDatabaseConnection();
     return result;

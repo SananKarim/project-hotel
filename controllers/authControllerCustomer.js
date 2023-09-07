@@ -49,13 +49,20 @@ module.exports.signin_post = async (req, res) => {
       { userId: user._id, role: "customer" },
       process.env.secret_key,
       {
-        expiresIn: "1h", 
+        expiresIn: "1h",
       }
     );
 
     return res.status(201).json({ message: "Login Successful", token: token });
   } catch (error) {
-  
     return res.status(500).json({ message: error.message });
+  }
+};
+module.exports.profile_get = async (req, res) => {
+  try {
+    console.log("testing in getprofile");
+    return res.status(200).json({ message: "Login Successful" });
+  } catch (error) {
+    return res.status(400).json({ message: "Login Successful" });
   }
 };

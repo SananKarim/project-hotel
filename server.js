@@ -17,4 +17,4 @@ app.listen(5001, () => {
 app.get("*", checkUser);
 
 app.use("/customer", customerRouter);
-app.use("/owner", requireAuth("owner"), ownerRouter);
+app.use("/owner", ownerRouter);

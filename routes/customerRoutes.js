@@ -6,11 +6,13 @@ const { requireAuth } = require("../middleware/jwtValidation");
 
 const customerRouter = Router();
 
-customerRouter.post("/signup", validateRequestSignUp, authControllerCustomer.signup_post);
+customerRouter.post(
+  "/signup",
+  validateRequestSignUp,
+  authControllerCustomer.signup_post
+);
 customerRouter.post("/signin", authControllerCustomer.signin_post);
 
-customerRouter.get("/profile", requireAuth("customer"), (req, res) => {
-
-});
+customerRouter.get("/profile", requireAuth(), authControllerCustomer.profile_get);
 
 module.exports = customerRouter;
